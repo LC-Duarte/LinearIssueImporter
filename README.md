@@ -15,7 +15,7 @@ The importer automatically:
 
 # Features
 
-- Bulk import from CSV
+- Bulk import from .CSV or .XLSX
 - Automatic Project creation
 - Parent / Sub-Issue hierarchy
 - Scrum-friendly Issue template
