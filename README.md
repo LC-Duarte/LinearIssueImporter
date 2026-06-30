@@ -1,36 +1,52 @@
 # Linear Issue Importer
 
-A simple Python utility to bulk import Issues into Linear from a CSV file.
+A simple Python utility to bulk import Issues into **Linear** from **CSV** or **Excel (.xlsx)** files.
 
 The importer automatically:
 
-- ✅ Creates Issues
-- ✅ Creates Projects if they do not exist
-- ✅ Creates Parent / Sub-Issue relationships
-- ✅ Converts User Stories into a standardized Markdown description
-- ✅ Converts Acceptance Criteria into Markdown checklists
-- ✅ Logs the entire import process to `import.log`
+* ✅ Creates Issues
+* ✅ Creates Projects when they do not exist
+* ✅ Creates Parent / Sub-Issue relationships
+* ✅ Formats User Stories using a Scrum template
+* ✅ Converts Acceptance Criteria into Markdown checklists
+* ✅ Supports **Dry Run** mode
+* ✅ Logs all operations to `import.log`
 
 ---
 
 # Features
 
-- Bulk import from .CSV or .XLSX
-- Automatic Project creation
-- Parent / Sub-Issue hierarchy
-- Scrum-friendly Issue template
-- Project cache for improved performance
-- CSV validation before import
-- Console and file logging
-- Simple configuration using `.env`
+* Import from **CSV**
+* Import from **Excel (.xlsx / .xls)**
+* Automatic Project creation
+* Parent / Sub-Issue hierarchy
+* Scrum-friendly Issue descriptions
+* CSV/XLSX validation before import
+* Console and file logging
+* Dry Run mode
+* Environment-based configuration
+
+---
+
+# Project Structure
+
+```text
+linear-import/
+│
+├── importer.py
+├── requirements.txt
+├── .env
+├── issues.csv
+├── issues.xlsx
+└── import.log
+```
 
 ---
 
 # Requirements
 
-- Python 3.10+
-- Linear API Key
-- Team Key (or Team Name)
+* Python 3.10+
+* Linear Personal API Key
 
 ---
 
@@ -39,12 +55,12 @@ The importer automatically:
 Clone the repository.
 
 ```bash
-git clone https://github.com/LC-Duarte/LinearIssueImporter/
+git clone <repository-url>
 
-cd LinearIssueImporter
+cd linear-import
 ```
 
-Install the dependencies.
+Install dependencies.
 
 ```bash
 pip install -r requirements.txt
@@ -54,56 +70,72 @@ pip install -r requirements.txt
 
 # Configuration
 
-Create a `.env` file in the project root.
+Create a `.env` file.
 
 ```env
 LINEAR_API_KEY=lin_api_xxxxxxxxxxxxxxxxx
-TEAM_KEY=<YOUR_TEAM_KEY>
+TEAM_KEY=LEG
 ```
 
-Where:
-
-| Variable | Description |
-|-----------|-------------|
-| LINEAR_API_KEY | Personal API Key generated in Linear |
-| TEAM_KEY | Team Key (recommended) or Team Name |
+| Variable         | Description                         |
+| ---------------- | ----------------------------------- |
+| `LINEAR_API_KEY` | Linear Personal API Key             |
+| `TEAM_KEY`       | Team Key (recommended) or Team Name |
 
 ---
 
-# CSV Format
+# Supported File Formats
+
+The importer supports:
+
+* `.csv`
+* `.xlsx`
+* `.xls`
+
+Examples:
+
+```bash
+python importer.py issues.csv
+```
+
+```bash
+python importer.py issues.xlsx
+```
+
+---
+
+# CSV / Excel Format
 
 The importer expects the following columns.
 
-| Column | Required | Description |
-|---------|----------|-------------|
-| Title | Yes | Issue title |
-| Parent | No | Parent Issue Title |
-| Priority | No | Urgent, High, Medium, Low |
-| User Story / Description | Yes | User Story |
-| Context | No | Business Context |
-| Acceptance Criteria | No | Acceptance Criteria |
-| Project | No | Project name |
+| Column                   | Required | Description                 |
+| ------------------------ | -------- | --------------------------- |
+| Title                    | ✅        | Issue title                 |
+| Parent                   |          | Parent Issue Title          |
+| Priority                 |          | Urgent, High, Medium or Low |
+| User Story / Description | ✅        | User Story                  |
+| Context                  |          | Business Context            |
+| Acceptance Criteria      |          | Acceptance Criteria         |
+| Project                  |          | Project Name                |
 
 Example:
 
-| Title | Parent | Priority | User Story / Description | Context | Acceptance Criteria | Project |
-|--------|---------|----------|--------------------------|----------|---------------------|----------|
-| Authentication | | High | As a user I want to authenticate | Login is required | Login works \| Logout works | Customer Portal |
-| Login Screen | Authentication | Medium | Create Login Screen | Frontend | Screen completed | Customer Portal |
+| Title          | Parent         | Priority | User Story / Description         | Context           | Acceptance Criteria        | Project         |
+| -------------- | -------------- | -------- | -------------------------------- | ----------------- | -------------------------- | --------------- |
+| Authentication |                | High     | As a user I want to authenticate | Login is required | Login works | Logout works | Customer Portal |
+| Login Screen   | Authentication | Medium   | Create Login Screen              | Frontend          | Screen completed           | Customer Portal |
 
 ---
 
 # Acceptance Criteria
 
-Acceptance Criteria can be separated using either:
-
-## Pipe
+Acceptance Criteria may be separated using **pipes**:
 
 ```text
 Login works|Logout works|JWT returned
 ```
 
-or multiple lines
+or multiple lines:
 
 ```text
 - Login works
@@ -111,7 +143,7 @@ or multiple lines
 - JWT returned
 ```
 
-Both will be converted into
+Both formats become:
 
 ```markdown
 - [ ] Login works
@@ -123,7 +155,7 @@ Both will be converted into
 
 # Generated Issue Description
 
-Each Issue is automatically formatted using the following template.
+Each Issue is created using the following template.
 
 ```markdown
 # User Story
@@ -146,29 +178,13 @@ Business context...
 
 ---
 
-# Running
-
-Default CSV:
-
-```bash
-python importer.py
-```
-
-Custom CSV:
-
-```bash
-python importer.py my_backlog.csv
-```
-
----
-
 # Automatic Project Creation
 
-If a Project referenced in the CSV does not exist, the importer will:
+If a Project referenced in the import file does not exist, the importer automatically:
 
-1. Create the Project
-2. Associate the Issue with the new Project
-3. Log a warning
+1. Creates the Project
+2. Associates the Issue with the new Project
+3. Writes a warning to the logs
 
 Example:
 
@@ -180,47 +196,86 @@ WARNING | Project 'Customer Portal' did not exist and was created automatically.
 
 # Parent / Sub-Issues
 
-Parent Issues are linked using the **Title** column.
+Parent relationships are resolved using the **Title** column.
 
 Example:
 
-| Title | Parent |
-|--------|---------|
-| Authentication | |
-| Login Screen | Authentication |
-| Login API | Authentication |
+| Title          | Parent         |
+| -------------- | -------------- |
+| Authentication |                |
+| Login Screen   | Authentication |
+| Login API      | Authentication |
 
-Results in
+Result:
 
-```
+```text
 Authentication
 ├── Login Screen
 └── Login API
 ```
 
-**Important**
+> **Important:** Issue titles must be unique within the import file.
 
-Issue titles **must be unique**.
+---
+
+# Dry Run
+
+Use **Dry Run** to validate the import without creating anything in Linear.
+
+```bash
+python importer.py issues.xlsx --dry-run
+```
+
+The Dry Run validates:
+
+* Required columns
+* Duplicate Titles
+* Parent references
+* Team existence
+* Existing Projects
+* Projects that would be created
+* Number of Issues
+* Parent/Sub-Issue relationships
+
+Example output:
+
+```text
+======================================
+DRY RUN SUMMARY
+======================================
+
+Issues.................... 184
+Projects no arquivo....... 12
+Projects a criar.......... 2
+Relações Parent/Sub....... 91
+
+WARNING
+- Customer Portal
+- Mobile App
+
+======================================
+```
+
+No mutations are executed while running in Dry Run mode.
 
 ---
 
 # Logging
 
-The importer writes logs to:
+Logs are written to both:
 
-```
-import.log
-```
+* Console
+* `import.log`
 
 Example:
 
 ```text
-INFO | Team found: LEG
-INFO | Creating Issues...
+INFO | Team encontrado: LEG
+INFO | Criando issues...
+WARNING | Project 'Customer Portal' não existia e foi criado automaticamente.
 INFO | LEG-12 Authentication
-WARNING | Project 'Customer Portal' did not exist and was created automatically.
 INFO | Login Screen -> Authentication
-INFO | Import completed.
+INFO | Importação concluída.
 ```
 
 ---
@@ -229,41 +284,64 @@ INFO | Import completed.
 
 Before importing, the script validates:
 
-- Required columns
-- Duplicate Issue Titles
-- Invalid Parent references
+* Required columns
+* Duplicate Issue Titles
+* Invalid Parent references
+* File format
+* Team configuration
 
-The import will stop if validation fails.
+The import stops immediately if validation fails.
 
 ---
 
 # Priority Mapping
 
-| CSV | Linear |
-|------|--------|
-| Urgent | 1 |
-| High | 2 |
-| Medium | 3 |
-| Low | 4 |
-| Empty | 0 |
+| CSV    | Linear |
+| ------ | ------ |
+| Urgent | 1      |
+| High   | 2      |
+| Medium | 3      |
+| Low    | 4      |
+| Empty  | 0      |
 
 ---
 
-# Future Improvements
+# Usage
 
-Planned features:
+Import a CSV:
 
-- Dry Run (`--dry-run`)
-- Automatic Initiative creation
-- Automatic Cycle (Sprint) assignment
-- Labels
-- Assignees
-- Story Points
-- Attachments
-- Retry mechanism
-- Progress bar
-- Summary report
-- Parallel imports
+```bash
+python importer.py issues.csv
+```
+
+Import an Excel file:
+
+```bash
+python importer.py issues.xlsx
+```
+
+Validate without importing:
+
+```bash
+python importer.py issues.xlsx --dry-run
+```
+
+---
+
+# Roadmap
+
+Planned improvements:
+
+* Automatic Initiative creation
+* Automatic Cycle (Sprint) assignment
+* Labels
+* Assignees
+* Story Points
+* Attachments
+* Retry mechanism
+* Progress bar
+* Summary report
+* Parallel imports
 
 ---
 
