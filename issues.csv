@@ -1,0 +1,11 @@
+Title,Parent,Priority,User Story / Description,Context,Acceptance Criteria,Project
+Authentication,,High,"As a user, I want to authenticate into the application so I can securely access my account.","The application currently does not require authentication.","User can login|User can logout|JWT token is returned","Customer Portal"
+Login Screen,Authentication,Medium,"Create the login screen.","Frontend implementation for authentication.","Email field is displayed|Password field is displayed|Login button is enabled","Customer Portal"
+Login API,Authentication,Medium,"Create the authentication API.","Backend endpoint responsible for validating credentials.","Returns JWT|Returns 401 for invalid credentials|Logs authentication attempts","Customer Portal"
+Forgot Password,Authentication,Low,"Allow users to reset their password.","Password recovery feature.","Recovery email is sent|Reset link expires after 24h","Customer Portal"
+Dashboard,,High,"As a user, I want to visualize my dashboard.","Users need a centralized view of their information.","Dashboard loads successfully|Widgets are displayed|Responsive layout","Customer Portal"
+Dashboard API,Dashboard,Medium,"Create dashboard endpoint.","Provide dashboard data.","Returns dashboard payload|Response under 500ms","Customer Portal"
+Dashboard UI,Dashboard,Medium,"Implement dashboard interface.","Frontend implementation.","Cards displayed|Charts rendered|Responsive layout","Customer Portal"
+Notifications,,Medium,"As a user, I want to receive notifications.","Improve communication with users.","Notifications can be created|Notifications can be dismissed","Notification Service"
+Email Notification,Notifications,Medium,"Send notifications by email.","Email integration.","Email template rendered|SMTP integration works","Notification Service"
+Push Notification,Notifications,Low,"Send push notifications.","Mobile integration.","Push delivered|Retry on failure","Notification Service"
