@@ -39,9 +39,9 @@ The importer automatically:
 Clone the repository.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/LC-Duarte/LinearIssueImporter/
 
-cd linear-import
+cd LinearIssueImporter
 ```
 
 Install the dependencies.
@@ -58,7 +58,7 @@ Create a `.env` file in the project root.
 
 ```env
 LINEAR_API_KEY=lin_api_xxxxxxxxxxxxxxxxx
-TEAM_KEY=LEG
+TEAM_KEY=<YOUR_TEAM_KEY>
 ```
 
 Where:
